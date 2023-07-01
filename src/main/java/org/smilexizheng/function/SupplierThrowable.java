@@ -4,7 +4,7 @@ import org.springframework.lang.Nullable;
 
 /**
  *
- * @author BJWK
+ * @author smile
  */
 @FunctionalInterface
 public interface SupplierThrowable<T> {

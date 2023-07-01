@@ -6,7 +6,7 @@ import org.springframework.util.DigestUtils;
 
 /**
  * 工具方法
- * @author BJWK
+ * @author smile
  */
 public class CommonUtil {
 

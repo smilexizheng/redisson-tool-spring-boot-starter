@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * lock注解
- * @author BJWK
+ * @author smile
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

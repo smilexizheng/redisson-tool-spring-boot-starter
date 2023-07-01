@@ -6,7 +6,7 @@ import org.smilexizheng.lock.enums.LockType;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author BJWK
+ * @author smile
  */
 public interface LockClient {
 

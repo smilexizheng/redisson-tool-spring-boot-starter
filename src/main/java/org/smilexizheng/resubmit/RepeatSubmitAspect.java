@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * 分布式防重复提交
  *
- * @author BJWK
+ * @author smile
  */
 @Aspect
 @Order(1)

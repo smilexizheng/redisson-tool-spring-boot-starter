@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 放重提交 注解
- * @author BJWK
+ * @author smile
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

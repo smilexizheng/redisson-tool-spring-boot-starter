@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * 限流器
  *
- * @author BJWK
+ * @author smile
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

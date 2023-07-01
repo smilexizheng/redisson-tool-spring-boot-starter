@@ -28,7 +28,7 @@ import org.springframework.core.io.ResourceLoader;
 import java.io.IOException;
 
 /**
- * @author BJWK
+ * @author smile
  */
 @AutoConfiguration
 @EnableConfigurationProperties({RedissonProperties.class})

@@ -2,7 +2,7 @@ package org.smilexizheng.exception;
 
 /**
  * 加锁获取锁失败
- * @author BJWK
+ * @author smile
  */
 public class LockException extends RuntimeException {
     public LockException(String message) {

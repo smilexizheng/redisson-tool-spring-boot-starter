@@ -11,7 +11,7 @@ import org.smilexizheng.lock.enums.LockType;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author BJWK
+ * @author smile
  */
 public class LockClientImpl implements LockClient {
     private final RedissonClient redissonClient;

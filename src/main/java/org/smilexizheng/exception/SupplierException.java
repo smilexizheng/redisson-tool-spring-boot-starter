@@ -2,7 +2,7 @@ package org.smilexizheng.exception;
 
 /**
  * 方法执行异常
- * @author BJWK
+ * @author smile
  */
 public class SupplierException extends RuntimeException {
     public SupplierException(String message) {

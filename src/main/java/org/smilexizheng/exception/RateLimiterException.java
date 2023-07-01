@@ -3,7 +3,7 @@ package org.smilexizheng.exception;
 import org.redisson.api.RateIntervalUnit;
 
 /**
- * @author BJWK
+ * @author smile
  */
 public class RateLimiterException extends RuntimeException {
     private final String key;

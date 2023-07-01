@@ -4,7 +4,7 @@ package org.smilexizheng.lock.enums;
 /**
  * redisson 锁的方式
  *
- * @author BJWK
+ * @author smile
  */
 public enum LockType {
     /**

@@ -2,7 +2,7 @@ package org.smilexizheng.exception;
 
 /**
  * 防重提交异常
- * @author BJWK
+ * @author smile
  */
 public class RepeatException extends RuntimeException {
     public RepeatException(String message) {
