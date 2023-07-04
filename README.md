@@ -18,8 +18,8 @@
 #### 2.1 项目配置
 
 ```yaml
-#分布式锁
-redisson:
+#redisson工具
+redisson-tool:
   #启用功能
   enabled: true
   #redisson配置文件

@@ -35,7 +35,7 @@ import java.io.IOException;
 @EnableConfigurationProperties({RedissonProperties.class})
 @ConditionalOnClass({RedissonClient.class})
 @ConditionalOnProperty(
-        value = {"redisson.enabled"},
+        value = {"redisson-tool.enabled"},
         havingValue = "true"
 )
 public class BeanAutoConfiguration {
@@ -71,7 +71,7 @@ public class BeanAutoConfiguration {
     @Bean
     @Order(1)
     @ConditionalOnProperty(
-            value = {"redisson.lock-enabled"},
+            value = {"redisson-tool.lock-enabled"},
             havingValue = "true"
     )
     @ConditionalOnMissingBean
@@ -85,7 +85,7 @@ public class BeanAutoConfiguration {
     @Bean
     @Order(2)
     @ConditionalOnProperty(
-            value = {"redisson.rate-limiter-enabled"},
+            value = {"redisson-tool.rate-limiter-enabled"},
             havingValue = "true"
     )
     @ConditionalOnMissingBean
@@ -117,7 +117,7 @@ public class BeanAutoConfiguration {
     @Order(5)
     @ConditionalOnMissingBean
     @ConditionalOnProperty(
-            value = {"redisson.repeat-submit-enabled"},
+            value = {"redisson-tool.repeat-submit-enabled"},
             havingValue = "true"
     )
     public RepeatSubmitAspect repeatSubmitAspect() {

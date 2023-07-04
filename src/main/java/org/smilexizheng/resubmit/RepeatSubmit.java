@@ -49,7 +49,6 @@ public @interface RepeatSubmit {
 
     /**
      * 是否 校验request表单内容
-     * @return
      */
     boolean validateForm() default true;
 

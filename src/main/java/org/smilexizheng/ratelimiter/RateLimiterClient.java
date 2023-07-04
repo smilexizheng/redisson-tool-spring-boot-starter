@@ -41,7 +41,7 @@ public interface RateLimiterClient {
      * @param rateInterval
      * @param supplier
      * @param <T>
-     * @return boolean
+     * @return T
      */
     default <T> T allow(String key, long rate, long rateInterval, SupplierThrowable<T> supplier) {
         return this.allow(key, rate, rateInterval, RateIntervalUnit.SECONDS, supplier);
@@ -55,7 +55,7 @@ public interface RateLimiterClient {
      * @param timeUnit
      * @param supplier
      * @param <T>
-     * @return
+     * @return T
      */
     default <T> T allow(String key, long rate, long rateInterval, RateIntervalUnit timeUnit, SupplierThrowable<T> supplier) {
         boolean isAllowed = this.isAllowed(key, rate, rateInterval, timeUnit);
