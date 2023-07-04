@@ -162,7 +162,6 @@ public String get(String userId){
 ```java
 /**
  * 自定义异常处理
- * @author BJWK
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
