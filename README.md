@@ -9,7 +9,7 @@
 <dependency>
     <groupId>io.github.smilexizheng</groupId>
     <artifactId>redisson-tool-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -87,12 +87,12 @@ public String get(String userId) {
 }
 
 ```
-value：key 默认空，可不填
-param: key的二级参数 支持spel,默认空
-waitTime: 等待时间，默认 30
-leaseTime: 自定解锁时间 默认60
-timeUnit：时间单位 默认秒
-type: 公平锁/普通锁 默认公平锁
+* value：key 默认空，可不填
+* param: key的二级参数 支持spel,默认空
+* waitTime: 等待时间，默认 30
+* leaseTime: 自定解锁时间 默认60
+* timeUnit：时间单位 默认秒
+* type: 公平锁/普通锁 默认公平锁
 
 
 #### 2.3 限流器
@@ -110,11 +110,11 @@ public String get(String userId){
         return "helloWorld"+userId;
 }
 ```
-value：key 默认空，可不填
-param: key的二级参数 支持spel,默认空
-rate: 等待时间，默认 100
-rateInterval: 自定解锁时间 默认 1
-timeUnit：时间单位 默认 分钟
+* value：key 默认空，可不填
+* param: key的二级参数 支持spel,默认空
+* rate: 等待时间，默认 100
+* rateInterval: 自定解锁时间 默认 1
+* timeUnit：时间单位 默认 分钟
 
 #### 2.4 防重提交
 
@@ -131,12 +131,12 @@ public String get(String userId){
         return "helloWorld"+userId;
 }
 ```
-value：key 默认空，可不填
-param: key的二级参数 支持spel,默认空
-expireTime: 等待时间，默认 10
-waitExpire: true 等待时间自动过期， false 执行完立即过期。默认true
-timeUnit：时间单位 默认 分钟
-validateForm: 是否校验表单 默认true
+* value：key 默认空，可不填
+* param: key的二级参数 支持spel,默认空
+* expireTime: 等待时间，默认 10
+* waitExpire: true 等待时间自动过期， false 执行完立即过期。默认true
+* timeUnit：时间单位 默认 分钟
+* validateForm: 是否校验表单 默认true
 
 ###  三、 配置说明
 #### 3.1 key的自动生成
