@@ -6,7 +6,8 @@ import org.smilexizheng.exception.SupplierException;
 import org.smilexizheng.function.SupplierThrowable;
 
 /**
- * 限流器
+ * 限流器接口
+ * @author smile
  */
 public interface RateLimiterClient {
 
@@ -16,7 +17,7 @@ public interface RateLimiterClient {
      * @param rate
      * @param rateInterval
      * @param timeUnit
-     * @return
+     * @return boolean
      */
     boolean isAllowed(String key, long rate, long rateInterval, RateIntervalUnit timeUnit);
 
@@ -26,7 +27,7 @@ public interface RateLimiterClient {
      * @param key
      * @param rate
      * @param rateInterval
-     * @return
+     * @return boolean
      */
     default boolean isAllowed(String key, long rate, long rateInterval) {
         return this.isAllowed(key, rate, rateInterval, RateIntervalUnit.SECONDS);
@@ -34,18 +35,28 @@ public interface RateLimiterClient {
 
 
     /**
-     *
+     * 是否限流
      * @param key
      * @param rate
      * @param rateInterval
      * @param supplier
      * @param <T>
-     * @return
+     * @return boolean
      */
     default <T> T allow(String key, long rate, long rateInterval, SupplierThrowable<T> supplier) {
         return this.allow(key, rate, rateInterval, RateIntervalUnit.SECONDS, supplier);
     }
 
+    /**
+     * 是否限流
+     * @param key
+     * @param rate
+     * @param rateInterval
+     * @param timeUnit
+     * @param supplier
+     * @param <T>
+     * @return
+     */
     default <T> T allow(String key, long rate, long rateInterval, RateIntervalUnit timeUnit, SupplierThrowable<T> supplier) {
         boolean isAllowed = this.isAllowed(key, rate, rateInterval, timeUnit);
         if (!isAllowed) {

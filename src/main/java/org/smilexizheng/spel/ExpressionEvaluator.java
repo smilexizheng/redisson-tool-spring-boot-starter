@@ -19,6 +19,7 @@ import org.springframework.expression.Expression;
 import org.springframework.lang.Nullable;
 
 /**
+ * spel 解析器
  * @author smile
  */
 public class ExpressionEvaluator extends CachedExpressionEvaluator {
@@ -30,7 +31,7 @@ public class ExpressionEvaluator extends CachedExpressionEvaluator {
 
     public EvaluationContext createContext(Method method, Object[] args, Object target, Class<?> targetClass, @Nullable BeanFactory beanFactory) {
         Method targetMethod = this.getTargetMethod(targetClass, method);
-        ExpressionRootObject rootObject = new ExpressionRootObject(method, args, target, targetClass, targetMethod);
+        ExpressionPointParam rootObject = new ExpressionPointParam(method, args, target, targetClass, targetMethod);
         MethodBasedEvaluationContext evaluationContext = new MethodBasedEvaluationContext(rootObject, targetMethod, args, this.getParameterNameDiscoverer());
         if (beanFactory != null) {
             evaluationContext.setBeanResolver(new BeanFactoryResolver(beanFactory));
@@ -61,7 +62,7 @@ public class ExpressionEvaluator extends CachedExpressionEvaluator {
 
     @Nullable
     public String evalAsText(String expression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
-        return (String)this.eval(expression, methodKey, evalContext, String.class);
+        return this.eval(expression, methodKey, evalContext, String.class);
     }
 
     @Nullable
@@ -82,9 +83,7 @@ public class ExpressionEvaluator extends CachedExpressionEvaluator {
 
     private Method getTargetMethod(Class<?> targetClass, Method method) {
         AnnotatedElementKey methodKey = new AnnotatedElementKey(method, targetClass);
-        return (Method)this.methodCache.computeIfAbsent(methodKey, (key) -> {
-            return AopUtils.getMostSpecificMethod(method, targetClass);
-        });
+        return this.methodCache.computeIfAbsent(methodKey, (key) -> AopUtils.getMostSpecificMethod(method, targetClass));
     }
 
     public void clear() {

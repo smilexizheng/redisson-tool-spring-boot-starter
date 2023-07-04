@@ -14,6 +14,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 
 /**
+ * 限流器AOP 切面
+ *
  * @author smile
  */
 @Aspect

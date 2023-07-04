@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 放重提交 注解
+ * 防重提交 注解
  * @author smile
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -13,31 +13,44 @@ import java.util.concurrent.TimeUnit;
 @Documented
 public @interface RepeatSubmit {
 
-    /**
-     * 防重等待解锁时间
-     * @return
-     */
-    long value()   default 10L;
 
     /**
-     * key参数，支持spel
+     * key 可为空，已保证唯一性
+     *
+     */
+    String value()   default "";
+
+    /**
+     * key过期时间
+     *
+     */
+    long expireTime()   default 10L;
+
+    /**
+     * key 二级参数，支持spel
      * 可为空
-     * @return
+     *
      */
     String param() default "";
 
     /**
      * 时间单位
-     * @return
+     *
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     /**
      * 过期方式
      *
-     * true 默认 防重等待时间过期
+     * true 默认 等待时间自动过期
      * false 方法执行完毕后后过期
      */
     boolean waitExpire() default true;
+
+    /**
+     * 是否 校验request表单内容
+     * @return
+     */
+    boolean validateForm() default true;
 
 }

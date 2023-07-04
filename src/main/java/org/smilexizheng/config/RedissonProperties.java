@@ -3,6 +3,7 @@ package org.smilexizheng.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * 功能模块及redisson配置
  * @author smile
  */
 @ConfigurationProperties("redisson")

@@ -11,6 +11,8 @@ import org.smilexizheng.lock.enums.LockType;
 import java.util.concurrent.TimeUnit;
 
 /**
+ *
+ * 分布式锁 实现类
  * @author smile
  */
 public class LockClientImpl implements LockClient {

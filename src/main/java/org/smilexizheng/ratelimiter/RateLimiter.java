@@ -6,7 +6,7 @@ import org.redisson.api.RateIntervalUnit;
 import java.lang.annotation.*;
 
 /**
- * 限流器
+ * 限流器 注解
  *
  * @author smile
  */
@@ -15,8 +15,8 @@ import java.lang.annotation.*;
 @Documented
 public @interface RateLimiter {
     /**
-     * key，保证唯一性
-     * 可为空
+     * key 可为空，已保证唯一性
+     *
      * @return
      */
     String value() default "";

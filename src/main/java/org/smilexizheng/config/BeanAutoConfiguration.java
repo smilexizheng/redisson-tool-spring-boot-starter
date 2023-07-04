@@ -28,6 +28,7 @@ import org.springframework.core.io.ResourceLoader;
 import java.io.IOException;
 
 /**
+ * 启用模块功能
  * @author smile
  */
 @AutoConfiguration

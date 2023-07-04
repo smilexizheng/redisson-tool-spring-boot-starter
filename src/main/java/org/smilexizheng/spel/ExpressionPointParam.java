@@ -2,7 +2,11 @@ package org.smilexizheng.spel;
 
 import java.lang.reflect.Method;
 
-public class ExpressionRootObject {
+/**
+ * 解析point参数
+ * @author BJWK
+ */
+public class ExpressionPointParam {
 
     private final Method method;
     private final Object[] args;
@@ -30,7 +34,7 @@ public class ExpressionRootObject {
         return this.targetMethod;
     }
 
-    public ExpressionRootObject(final Method method, final Object[] args, final Object target, final Class<?> targetClass, final Method targetMethod) {
+    public ExpressionPointParam(final Method method, final Object[] args, final Object target, final Class<?> targetClass, final Method targetMethod) {
         this.method = method;
         this.args = args;
         this.target = target;

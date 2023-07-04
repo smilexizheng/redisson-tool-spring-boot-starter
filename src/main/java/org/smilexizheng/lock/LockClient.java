@@ -6,6 +6,8 @@ import org.smilexizheng.lock.enums.LockType;
 import java.util.concurrent.TimeUnit;
 
 /**
+ *
+ * 分布式锁 接口
  * @author smile
  */
 public interface LockClient {

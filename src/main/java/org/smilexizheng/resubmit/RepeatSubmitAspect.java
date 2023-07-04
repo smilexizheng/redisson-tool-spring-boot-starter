@@ -12,6 +12,7 @@ import org.smilexizheng.spel.ExpressionEvaluator;
 import org.smilexizheng.utils.CommonUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,13 +23,13 @@ import java.util.Map;
 
 
 /**
- * 分布式防重复提交
+ * 防重复提交切面
  *
  * @author smile
  */
 @Aspect
 @Order(1)
-public class RepeatSubmitAspect {
+public class RepeatSubmitAspect implements ApplicationContextAware {
 
     private static final ExpressionEvaluator EVALUATOR = new ExpressionEvaluator();
 
@@ -37,7 +38,7 @@ public class RepeatSubmitAspect {
     private final RedissonClient redissonClient;
 
 
-    private static final String PREFIX = "repeat-submit:";
+    private static final String PREFIX = "repeat-submit";
 
     public RepeatSubmitAspect(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
@@ -45,33 +46,40 @@ public class RepeatSubmitAspect {
 
     @Around("@annotation(repeatSubmit)")
     public Object aroundRedisLock(ProceedingJoinPoint point, RepeatSubmit repeatSubmit) {
-        //签名参数 最终转hex唯一标识
-        StringBuffer signature = new StringBuffer();
-        signature.append(CommonUtil.getPointSource2Hex(point));
 
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-
-        //请求的表单参数 循环生成hex 作为签名参数
-        parameterMap.values().forEach(i -> {
-            signature.append(DigestUtils.md5DigestAsHex(String.join(",", i).getBytes()));
-        });
-        // 根据签名生成hex 作为key
-        String redisKey = DigestUtils.md5DigestAsHex(signature.toString().getBytes());
-
+        StringBuffer redisKey = new StringBuffer(PREFIX);
+        String pointHex = CommonUtil.getPointSource2Hex(point);
+        String key = repeatSubmit.value();
+        if(StringUtil.isBlank(key)){
+            key=pointHex;
+        }
+        redisKey.append(":").append(key);
 
         String elParam = repeatSubmit.param();
         if (StringUtil.isNotBlank(elParam)) {
             elParam = EVALUATOR.evalPointParam(point, elParam, applicationContext);
-            redisKey =  elParam+':'+redisKey ;
+            redisKey.append(":").append(elParam);
         }
 
-        RBucket<String> rBucket = redissonClient.getBucket(PREFIX + redisKey);
+        if(repeatSubmit.validateForm()){
+            //签名参数 最终转hex唯一标识
+            StringBuffer signature = new StringBuffer(pointHex);
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            Map<String, String[]> parameterMap = request.getParameterMap();
+
+            //请求的表单参数 生成hex 作为签名参数
+            parameterMap.values().forEach(i ->
+                    signature.append(DigestUtils.md5DigestAsHex(String.join(",", i).getBytes()))
+            );
+            redisKey.append(":").append(DigestUtils.md5DigestAsHex(signature.toString().getBytes()));
+        }
+
+        RBucket<String> rBucket = redissonClient.getBucket(redisKey.toString());
         if (rBucket.isExists()) {
             throw new RepeatException("不允许重复提交，请稍后再试");
         }
-        long waitTime = repeatSubmit.value() > 1L ? repeatSubmit.value() : 1L;
+        long waitTime = repeatSubmit.expireTime() > 1L ? repeatSubmit.expireTime() : 1L;
         rBucket.set("1", waitTime, repeatSubmit.timeUnit());
 
         try {
@@ -85,7 +93,7 @@ public class RepeatSubmitAspect {
         }
     }
 
-
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }

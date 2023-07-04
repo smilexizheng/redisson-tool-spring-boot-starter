@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- *
+ * 分布式锁AOP 切面
  * @author smile
  */
 @Aspect
