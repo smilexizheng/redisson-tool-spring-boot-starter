@@ -6,8 +6,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
-import org.smilexizheng.exception.RepeatException;
-import org.smilexizheng.exception.SupplierException;
+import org.smilexizheng.exception.ExceptionType;
+import org.smilexizheng.exception.RedissonToolException;
 import org.smilexizheng.spel.ExpressionEvaluator;
 import org.smilexizheng.utils.CommonUtil;
 import org.springframework.beans.BeansException;
@@ -77,7 +77,7 @@ public class RepeatSubmitAspect implements ApplicationContextAware {
 
         RBucket<String> rBucket = redissonClient.getBucket(redisKey.toString());
         if (rBucket.isExists()) {
-            throw new RepeatException("不允许重复提交，请稍后再试");
+            throw new RedissonToolException(ExceptionType.RepeatException,"Duplicate submissions are not allowed. Please try again later");
         }
         long waitTime = repeatSubmit.expireTime() > 1L ? repeatSubmit.expireTime() : 1L;
         rBucket.set("1", waitTime, repeatSubmit.timeUnit());
@@ -85,7 +85,7 @@ public class RepeatSubmitAspect implements ApplicationContextAware {
         try {
             return point.proceed();
         } catch (Throwable throwable) {
-            throw new SupplierException("方法执行出错");
+            throw new RedissonToolException(ExceptionType.SupplierException,"Supplier method exception");
         }finally {
             if(!repeatSubmit.waitExpire()){
                 rBucket.deleteAsync();

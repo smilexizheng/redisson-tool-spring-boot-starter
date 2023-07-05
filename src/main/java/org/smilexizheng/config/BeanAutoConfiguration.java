@@ -13,6 +13,8 @@ import org.smilexizheng.ratelimiter.RateLimiterAspect;
 import org.smilexizheng.ratelimiter.RateLimiterClient;
 import org.smilexizheng.ratelimiter.RateLimiterClientImpl;
 import org.smilexizheng.resubmit.RepeatSubmitAspect;
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,6 +31,7 @@ import java.io.IOException;
 
 /**
  * 启用模块功能
+ *
  * @author smile
  */
 @AutoConfiguration
@@ -43,26 +46,29 @@ public class BeanAutoConfiguration {
 
     private RedissonClient redissonClient;
 
-    public BeanAutoConfiguration(RedissonProperties properties){
-        logger.info("Initializing Redisson Utils");
+    public BeanAutoConfiguration(RedissonProperties properties) {
+        logger.info("Initializing Redisson Tool");
         this.redissonClient = getRedissonClient(properties);
     }
 
-    private RedissonClient getRedissonClient(RedissonProperties properties){
-        if(null==redissonClient){
+    private RedissonClient getRedissonClient(RedissonProperties properties) {
+        if (null == redissonClient) {
             ResourceLoader loader = new DefaultResourceLoader();
             Resource resource = loader.getResource(properties.getPath());
-            if (resource.exists()) {
-                Config config = null;
-                try {
-                    config = Config.fromYAML(resource.getInputStream());
-                } catch (IOException e) {
-                    logger.error("Redisson Yaml file read failed");
-                    e.printStackTrace();
-                }
-                redissonClient = Redisson.create(config);
-                logger.info("Redisson connection completed");
+            if (!resource.exists()) {
+                logger.error("Redisson tool configuration file does not exist");
+                throw new BeanCreationException("Redisson tool configuration file does not exist");
             }
+            Config config = null;
+            try {
+                config = Config.fromYAML(resource.getInputStream());
+            } catch (IOException e) {
+                logger.error("Redisson Yaml file read failed");
+                e.printStackTrace();
+            }
+            redissonClient = Redisson.create(config);
+            logger.info("Redisson connection completed");
+
         }
         return redissonClient;
     }
@@ -75,7 +81,7 @@ public class BeanAutoConfiguration {
             havingValue = "true"
     )
     @ConditionalOnMissingBean
-    public LockClient redisLockClient(){
+    public LockClient redisLockClient() {
         LockClientImpl lockClient = new LockClientImpl(this.redissonClient);
         logger.info("Distributed Locks Successfully");
         return lockClient;
@@ -89,7 +95,7 @@ public class BeanAutoConfiguration {
             havingValue = "true"
     )
     @ConditionalOnMissingBean
-    public RateLimiterClient rateLimiterClient(){
+    public RateLimiterClient rateLimiterClient() {
         RateLimiterClientImpl rateLimiterClient = new RateLimiterClientImpl(this.redissonClient);
         logger.info("RateLimiter Successfully");
         return rateLimiterClient;

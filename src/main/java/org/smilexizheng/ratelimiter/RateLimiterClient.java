@@ -1,8 +1,8 @@
 package org.smilexizheng.ratelimiter;
 
 import org.redisson.api.RateIntervalUnit;
-import org.smilexizheng.exception.RateLimiterException;
-import org.smilexizheng.exception.SupplierException;
+import org.smilexizheng.exception.ExceptionType;
+import org.smilexizheng.exception.RedissonToolException;
 import org.smilexizheng.function.SupplierThrowable;
 
 /**
@@ -60,13 +60,13 @@ public interface RateLimiterClient {
     default <T> T allow(String key, long rate, long rateInterval, RateIntervalUnit timeUnit, SupplierThrowable<T> supplier) {
         boolean isAllowed = this.isAllowed(key, rate, rateInterval, timeUnit);
         if (!isAllowed) {
-            throw new RateLimiterException(key, rate, rateInterval, timeUnit);
+            throw new RedissonToolException(ExceptionType.RateLimiterException,String.format("Restricted flow, Rate：%d/%d sec", rate, timeUnit.toMillis(rateInterval)/1000));
         }
         try {
             return supplier.get();
         }  catch (Throwable e) {
             e.printStackTrace();
-            throw new SupplierException(key + ",supplier method throwable");
+            throw new RedissonToolException(ExceptionType.SupplierException,"Supplier method exception");
         }
     }
 

@@ -158,7 +158,8 @@ public String get(String userId){
 - 3.@RedissonLock     分布式锁
 
 ### 四、捕获异常 响应式处理
-创建异常处理类，GlobalExceptionHandler
+创建异常处理类 GlobalExceptionHandler，可进行错误日志记录，正确返回错误信息。
+参考：
 ```java
 /**
  * 自定义异常处理
@@ -168,43 +169,31 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /**
-     * 限流异常响应
-     * @param req
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(value = RateLimiterException.class)
+    @ExceptionHandler(value = RedissonToolException.class)
     @ResponseBody
-    public R rateLimiterExceptionHandler(HttpServletRequest req, RateLimiterException e) {
-        logger.error(req.getRequestURL().toString());
-        logger.error(String.format("已限流：%s，速率：%d/%d", e.getKey(), e.getRate(), e.getTimeUnit().toMillis(e.getRateInterval()) / 1000));
-        // 根据自身项目做响应处理      
-        return R.error("服务器繁忙");
+    public R rateLimiterExceptionHandler(RedissonToolException e,HttpServletRequest req){
+        logger.error(String.format("[%s]%s：%s",req.getRequestURL().toString(),e.getType().toString(),e.getMessage()));
+        String errorMsg;
+        switch (e.getType()){
+            case TryLockFail:
+                errorMsg = "排队中，请重试";
+                break;
+            case RateLimiterException:
+                errorMsg ="系统繁忙，请重试！";
+                break;
+            case RepeatException:
+                errorMsg ="请勿重复提交！";
+                break;
+//          更多异常见 org.smilexizheng.exception.ExceptionType 
+            default:
+                errorMsg ="系统繁忙！";
+                break;
+        }
+        return R.error(errorMsg);
     }
-
-    /**
-     * 加锁异常响应
-     * @param req
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(value = LockException.class)
-    @ResponseBody
-    public R lockExceptionHandler(HttpServletRequest req, LockException e){
-        logger.error(req.getRequestURL().toString());
-        logger.error(e.getMessage());
-        return R.error("加锁异常");
-    }
-    .......
 }
 ```
-org.smilexizheng.exception 异常类 
-- RateLimiterException.class     限流异常
-- LockException.class            分布式锁异常
-- RepeatException.class          防重提交异常
-- SupplierException.class        aop方法执行异常
-- SpelEvaluationException.class  spel解析异常
+
 
 ### 最终 欢迎提出使用中的问题
 

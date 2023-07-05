@@ -1,12 +1,10 @@
 package org.smilexizheng.spel;
 
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.smilexizheng.exception.ExceptionType;
+import org.smilexizheng.exception.RedissonToolException;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -18,8 +16,13 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * spel 解析器
+ *
  * @author smile
  */
 public class ExpressionEvaluator extends CachedExpressionEvaluator {
@@ -52,12 +55,19 @@ public class ExpressionEvaluator extends CachedExpressionEvaluator {
 
     @Nullable
     public Object eval(String expression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
-        return this.eval(expression, methodKey, evalContext, (Class)null);
+        return this.eval(expression, methodKey, evalContext, (Class) null);
     }
 
     @Nullable
     public <T> T eval(String expression, AnnotatedElementKey methodKey, EvaluationContext evalContext, @Nullable Class<T> valueType) {
-        return this.getExpression(this.expressionCache, methodKey, expression).getValue(evalContext, valueType);
+        T value = null;
+        try {
+            value = this.getExpression(this.expressionCache, methodKey, expression).getValue(evalContext, valueType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RedissonToolException(ExceptionType.SpElException,"spel parse error");
+        }
+        return value;
     }
 
     @Nullable
@@ -67,7 +77,7 @@ public class ExpressionEvaluator extends CachedExpressionEvaluator {
 
     @Nullable
     public String evalPointParam(ProceedingJoinPoint point, String lockParam, ApplicationContext applicationContext) {
-        MethodSignature ms = (MethodSignature)point.getSignature();
+        MethodSignature ms = (MethodSignature) point.getSignature();
         Method method = ms.getMethod();
         Object[] args = point.getArgs();
         Object target = point.getTarget();

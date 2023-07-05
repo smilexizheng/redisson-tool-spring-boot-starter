@@ -3,8 +3,8 @@ package org.smilexizheng.lock;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.smilexizheng.exception.LockException;
-import org.smilexizheng.exception.SupplierException;
+import org.smilexizheng.exception.ExceptionType;
+import org.smilexizheng.exception.RedissonToolException;
 import org.smilexizheng.function.SupplierThrowable;
 import org.smilexizheng.lock.enums.LockType;
 
@@ -46,20 +46,23 @@ public class LockClientImpl implements LockClient {
 
     @Override
     public <T> T lock(String lockName, LockType lockType, long waitTime, long leaseTime, TimeUnit timeUnit, SupplierThrowable<T> supplier) {
-        T obj = null;
-        boolean result = false;
+        T obj;
+        boolean result;
         try {
             result = this.tryLock(lockName, lockType, waitTime, leaseTime, timeUnit);
-            if (!result) {
-                throw new LockException(lockName+",tryLock false");
-            }
-            obj = supplier.get();
-        } catch (LockException e) {
-            throw e;
-        } catch (Throwable e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-            throw new SupplierException(lockName + ",supplier method throwable");
-        } finally {
+            throw new RedissonToolException(ExceptionType.LockException,"Try Lock has exception,look error log");
+        }
+        if (!result) {
+            throw new RedissonToolException(ExceptionType.TryLockFail,"Try Lock Fail");
+        }
+        try {
+            obj = supplier.get();
+        }  catch (Throwable e) {
+            e.printStackTrace();
+            throw new RedissonToolException(ExceptionType.SupplierException,"Supplier method exception");
+        }  finally {
             this.unLock(lockName, lockType);
         }
         return obj;
