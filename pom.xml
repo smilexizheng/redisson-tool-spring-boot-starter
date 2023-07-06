@@ -14,17 +14,16 @@
     <url>https://github.com/smilexizheng/redisson-tool-spring-boot-starter</url>
 
     <properties>
-        <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+        <spring-boot.version>2.7.13</spring-boot.version>
+        <redisson.version>3.22.1</redisson.version>
+        <google-code-findbugs.version>3.0.1</google-code-findbugs.version>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.8</jdk.version>
         <project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
     </properties>
-
-    <!--    <parent>-->
-    <!--        <groupId>org.springframework.boot</groupId>-->
-    <!--        <artifactId>spring-boot-starter-parent</artifactId>-->
-    <!--        <version>2.7.13</version>-->
-    <!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
-    <!--    </parent>-->
 
     <dependencyManagement>
         <dependencies>
@@ -32,7 +31,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.7.13</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -59,7 +58,7 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>3.22.1</version>
+            <version>${redisson.version}</version>
         </dependency>
 
         <dependency>
@@ -74,7 +73,7 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
-            <version>3.0.1</version>
+            <version>${google-code-findbugs.version}</version>
         </dependency>
     </dependencies>
 
@@ -184,14 +183,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!--                    <plugin>-->
-                    <!--                        <groupId>org.apache.maven.plugins</groupId>-->
-                    <!--                        <artifactId>maven-site-plugin</artifactId>-->
-                    <!--                        <version>3.7.1</version>-->
-                    <!--                        <configuration>-->
-                    <!--                            <locales>zh_CN</locales>-->
-                    <!--                        </configuration>-->
-                    <!--                    </plugin>-->
                 </plugins>
 
             </build>
