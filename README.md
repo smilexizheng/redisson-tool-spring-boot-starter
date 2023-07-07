@@ -194,6 +194,13 @@ public class GlobalExceptionHandler {
 }
 ```
 
+常见问题：
+> [1.spring Controller 自定义参数注入 传递用户信息](https://blog.csdn.net/qq_32698323/article/details/131598162)
+
+
+
+
+
 
 ### 欢迎提出使用中的问题
 
