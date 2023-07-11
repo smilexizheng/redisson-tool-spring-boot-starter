@@ -47,7 +47,6 @@ public class BeanAutoConfiguration {
     private RedissonClient redissonClient;
 
     public BeanAutoConfiguration(RedissonProperties properties) {
-        logger.info("Initializing Redisson Tool");
         this.redissonClient = getRedissonClient(properties);
     }
 
@@ -57,17 +56,16 @@ public class BeanAutoConfiguration {
             Resource resource = loader.getResource(properties.getPath());
             if (!resource.exists()) {
                 logger.error("Redisson tool configuration file does not exist");
-                throw new BeanCreationException("Redisson tool configuration file does not exist");
             }
-            Config config = null;
             try {
-                config = Config.fromYAML(resource.getInputStream());
+                Config  config = Config.fromYAML(resource.getInputStream());
+                redissonClient = Redisson.create(config);
             } catch (IOException e) {
-                logger.error("Redisson Yaml file read failed");
-                e.printStackTrace();
+                logger.error("IOException: Redisson Yaml file read failed");
+                throw new BeanCreationException("Redisson tool configuration file read failed or not exist");
             }
-            redissonClient = Redisson.create(config);
-            logger.info("Redisson connection completed");
+
+            logger.info("Initializing Redisson Tool Successfully");
 
         }
         return redissonClient;

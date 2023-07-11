@@ -36,7 +36,7 @@ public class LockAspect implements ApplicationContextAware {
     public Object aroundRedisLock(ProceedingJoinPoint point, RedissonLock redisLock) {
         String lockKey = redisLock.value();
         if(StringUtil.isBlank(lockKey)){
-            lockKey = CommonUtil.getPointSource2Hex(point);
+            lockKey = CommonUtil.getMd5DigestAsHex(point.getStaticPart().toLongString());
         }
         Assert.hasText(lockKey, "@RedissonLock key must not be null or empty");
         String lockParam = redisLock.param();

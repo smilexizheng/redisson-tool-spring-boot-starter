@@ -26,7 +26,7 @@ public class RateLimiterAspect implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    private RateLimiterClient rateLimiterClient;
+    private final RateLimiterClient rateLimiterClient;
 
     private static final String PREFIX = "rate-limiter:";
 
@@ -35,7 +35,7 @@ public class RateLimiterAspect implements ApplicationContextAware {
     public  Object aroundRateLimiter(ProceedingJoinPoint point, RateLimiter rateLimiter){
         String redisKey = rateLimiter.value();
         if(StringUtil.isBlank(redisKey)){
-            redisKey = CommonUtil.getPointSource2Hex(point);
+            redisKey = CommonUtil.getMd5DigestAsHex(point.getStaticPart().toLongString());
         }
         Assert.hasText(redisKey, "@RateLimiter key must not be null or empty");
         String lockParam = rateLimiter.param();

@@ -49,7 +49,7 @@ public class RepeatSubmitAspect implements ApplicationContextAware {
 
 
         StringBuffer redisKey = new StringBuffer(PREFIX);
-        String pointHex = CommonUtil.getPointSource2Hex(point);
+        String pointHex = CommonUtil.getMd5DigestAsHex(point.getStaticPart().toLongString());
         String key = repeatSubmit.value();
         if(StringUtil.isBlank(key)){
             key=pointHex;
@@ -77,14 +77,15 @@ public class RepeatSubmitAspect implements ApplicationContextAware {
 
         RBucket<String> rBucket = redissonClient.getBucket(redisKey.toString());
         if (rBucket.isExists()) {
-            throw new RedissonToolException(ExceptionType.RepeatException,"Duplicate submissions are not allowed. Please try again later");
+            throw new RedissonToolException(ExceptionType.isRepeatSubmit,"Duplicate submissions are not allowed. Please try again later");
         }
-        long waitTime = repeatSubmit.expireTime() > 1L ? repeatSubmit.expireTime() : 1L;
+        long waitTime = Math.max(repeatSubmit.expireTime(), 1L);
         rBucket.set("1", waitTime, repeatSubmit.timeUnit());
 
         try {
             return point.proceed();
-        } catch (Throwable throwable) {
+        } catch (Throwable e) {
+            e.printStackTrace();
             throw new RedissonToolException(ExceptionType.SupplierException,"Supplier method exception");
         }finally {
             if(!repeatSubmit.waitExpire()){

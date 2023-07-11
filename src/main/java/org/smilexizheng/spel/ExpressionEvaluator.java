@@ -26,8 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author smile
  */
 public class ExpressionEvaluator extends CachedExpressionEvaluator {
-    private final Map<ExpressionKey, Expression> expressionCache = new ConcurrentHashMap(64);
-    private final Map<AnnotatedElementKey, Method> methodCache = new ConcurrentHashMap(64);
+    private final Map<ExpressionKey, Expression> expressionCache = new ConcurrentHashMap<>(64);
+    private final Map<AnnotatedElementKey, Method> methodCache = new ConcurrentHashMap<>(64);
 
     public ExpressionEvaluator() {
     }
@@ -60,7 +60,7 @@ public class ExpressionEvaluator extends CachedExpressionEvaluator {
 
     @Nullable
     public <T> T eval(String expression, AnnotatedElementKey methodKey, EvaluationContext evalContext, @Nullable Class<T> valueType) {
-        T value = null;
+        T value;
         try {
             value = this.getExpression(this.expressionCache, methodKey, expression).getValue(evalContext, valueType);
         } catch (Exception e) {

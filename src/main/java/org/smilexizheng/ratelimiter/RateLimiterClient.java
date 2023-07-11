@@ -60,7 +60,7 @@ public interface RateLimiterClient {
     default <T> T allow(String key, long rate, long rateInterval, RateIntervalUnit timeUnit, SupplierThrowable<T> supplier) {
         boolean isAllowed = this.isAllowed(key, rate, rateInterval, timeUnit);
         if (!isAllowed) {
-            throw new RedissonToolException(ExceptionType.RateLimiterException,String.format("Restricted flow, Rate：%d/%d sec", rate, timeUnit.toMillis(rateInterval)/1000));
+            throw new RedissonToolException(ExceptionType.isRateLimiter,String.format("Restricted flow, Rate：%d/%d sec", rate, timeUnit.toMillis(rateInterval)/1000));
         }
         try {
             return supplier.get();

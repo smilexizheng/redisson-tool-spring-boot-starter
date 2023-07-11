@@ -1,24 +1,24 @@
 package org.smilexizheng.utils;
 
 
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.util.DigestUtils;
 
 /**
  * 工具方法
+ *
  * @author smile
  */
 public class CommonUtil {
 
 
     /**
-     * 生成注解的唯一key
-     * 切入方法 SourceLocation 转hex
-     * @param point
-     * @return hex String
+     * MD5哈希值
+     *
+     * @param str 待处理字符
+     * @return a hexadecimal digest string
      */
-    public static String getPointSource2Hex(ProceedingJoinPoint point){
-        return DigestUtils.md5DigestAsHex(point.getStaticPart().toLongString().getBytes());
+    public static String getMd5DigestAsHex(String str) {
+        return DigestUtils.md5DigestAsHex(str.getBytes());
     }
 
 
