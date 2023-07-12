@@ -9,7 +9,7 @@
 <dependency>
     <groupId>io.github.smilexizheng</groupId>
     <artifactId>redisson-tool-spring-boot-starter</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -35,7 +35,6 @@ redisson-tool:
 lock/redisson-lock.yml [参考redisson的声明式配置 ](https://github.com/redisson/redisson/wiki/2.-Configuration#22-declarative-configuration)
 
 ```yaml
----
 singleServerConfig:
   idleConnectionTimeout: 10000
   connectTimeout: 10000
@@ -63,32 +62,31 @@ transportMode: "NIO"
 ```java
 //最小化使用
 @RedissonLock
-public String get(String userId){
-        return "helloWorld"+userId;
-}
+public String get(String userId)
+
 
 //完整配置
-@RedissonLock(value = "lockKey", param = "#userId", waitTime = 10, leaseTime = 30, type = LockType.FAIR, timeUnit = TimeUnit.SECONDS)
-public String get(String userId){
-        return "helloWorld"+userId;
-}
+@RedissonLock(value = "lockKey", param = "#user.id", waitTime = 10, leaseTime = 30, type = LockType.FAIR, timeUnit = TimeUnit.SECONDS)
+public String get(User user)
 
 
 //编程式使用
 @Autowired 
 private LockClient lockClient;
 
-public String get(String userId) {  
-    String key = "user:"+userId;
+public String get(User user) {  
+    String key = user.getId();
+    // ....
     String data= lockClient.lock(key, LockType.FAIR,10,20, TimeUnit.SECONDS,()->{               
           return "hello"+key;
         });
+    // ....
     return data;
 }
 
 ```
 * value：key 默认空，可不填
-* param: key的二级参数 支持spel,默认空
+* param: key的二级参数 支持spel,默认空 
 * waitTime: 等待时间，默认 30
 * leaseTime: 自动解锁时间 默认60
 * timeUnit：时间单位 默认秒
@@ -100,15 +98,11 @@ public String get(String userId) {
 ```java
 //最小化使用
 @RateLimiter
-public String get(String userId){
-        return "helloWorld"+userId;
-}
+public String get(String userId)
 
 //完整配置
-@RateLimiter(value="getUserInfo",param = "#userId",rate = 100,rateInterval = 1 ,timeUnit = TimeUnit.MINUTES)
-public String get(String userId){
-        return "helloWorld"+userId;
-}
+@RateLimiter(value="getUserInfo",param = "#user.id",rate = 100,rateInterval = 1 ,timeUnit = TimeUnit.MINUTES)
+public String get(User user)
 ```
 * value：key 默认空，可不填
 * param: key的二级参数 支持spel,默认空
@@ -121,15 +115,11 @@ public String get(String userId){
 ```java
 //最小化使用
 @RepeatSubmit
-public String get(String userId){
-        return "helloWorld"+userId;
-}
+public String get(String userId)
 
 //完整配置
-@RepeatSubmit(value="getUserInfo",param = "#userId",expireTime = 10,waitExpire = true,validateForm=true,timeUnit = TimeUnit.SECONDS)
-public String get(String userId){
-        return "helloWorld"+userId;
-}
+@RepeatSubmit(value="getUserInfo",param = "#user.id",expireTime = 10,waitExpire = true,validateForm=true,timeUnit = TimeUnit.SECONDS)
+public String get(User user)
 ```
 * value：key 默认空，可不填
 * param: key的二级参数 支持spel,默认空
@@ -140,26 +130,23 @@ public String get(String userId){
 
 ###  三、 配置说明
 #### 3.1 key的自动生成
-- value 作为key使用，默认空可不填，使用切入方法的JoinPoint.StaticPart转hex 作为key
+- value 作为key使用，默认使用切入方法的JoinPoint.StaticPart转hex 作为key
 - param 作为粒度控制，比如某用户，某类型，支持spel
-#### 3.2 混合使用的处理次序
-```java
-    
+
+#### 3.2 注解混合使用的执行优先级
+```java    
     @RedissonLock
     @RepeatSubmit
     @RateLimiter
-    public String get(String key) {
-        return "hello";
-    }
+    public String get(String key)
 ```
-- 使用@Order控制切面执行顺序
-- 1.@RepeatSubmit     防重提交  
-- 2.@RateLimiter      限流器 
-- 3.@RedissonLock     分布式锁
+
+- 顺序为首先@RepeatSubmit，其次@RateLimiter，最后@RedissonLock 
 
 ### 四、捕获异常 响应式处理
 创建异常处理类 GlobalExceptionHandler，可进行错误日志记录，正确返回错误信息。
 参考：
+
 ```java
 /**
  * 自定义异常处理
@@ -171,24 +158,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = RedissonToolException.class)
     @ResponseBody
-    public R rateLimiterExceptionHandler(RedissonToolException e,HttpServletRequest req){
-        logger.error(String.format("[%s]%s：%s",req.getRequestURL().toString(),e.getType().toString(),e.getMessage()));
-        String errorMsg;
-        switch (e.getType()){
-            case TryLockFail:
-                errorMsg = "排队中，请重试";
-                break;
-            case RateLimiterException:
-                errorMsg ="系统繁忙，请重试！";
-                break;
-            case RepeatException:
-                errorMsg ="请勿重复提交！";
-                break;
+    public R rateLimiterExceptionHandler(RedissonToolException e, HttpServletRequest req) {
+        logger.error(String.format("[%s]%s：%s", req.getRequestURL().toString(), e.getType().toString(), e.getMessage()));
+        //jdk17 语法
+        String errorMsg = switch (e.getType()) {
+            case TryLockFail -> "排队中，请重试";
+            case RateLimiterException -> "系统繁忙，请重试！";
+            case RepeatException -> "请勿重复提交！";
 //          更多异常见 org.smilexizheng.exception.ExceptionType 
-            default:
-                errorMsg ="系统繁忙！";
-                break;
-        }
+            default -> "系统繁忙！";
+        };
         return R.error(errorMsg);
     }
 }
