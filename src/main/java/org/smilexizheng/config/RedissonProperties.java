@@ -26,6 +26,8 @@ public class RedissonProperties {
      * 启用防重提交
      */
     private Boolean repeatSubmitEnabled;
+
+    private SnowflakeProperties snowflake;
     /**
      * redisson配置文件的路径
      */

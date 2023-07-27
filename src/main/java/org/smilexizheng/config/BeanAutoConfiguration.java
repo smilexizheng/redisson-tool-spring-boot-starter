@@ -104,8 +104,8 @@ public class BeanAutoConfiguration {
     @Order(3)
     @ConditionalOnBean(LockClient.class)
     @ConditionalOnMissingBean
-    public LockAspect redisLockAspect(LockClient redisLockClient) {
-        return new LockAspect(redisLockClient);
+    public LockAspect redisLockAspect() {
+        return new LockAspect();
     }
 
 
@@ -113,8 +113,8 @@ public class BeanAutoConfiguration {
     @Order(4)
     @ConditionalOnBean(RateLimiterClient.class)
     @ConditionalOnMissingBean
-    public RateLimiterAspect rateLimiterAspect(RateLimiterClient rateLimiterClient) {
-        return new RateLimiterAspect(rateLimiterClient);
+    public RateLimiterAspect rateLimiterAspect() {
+        return new RateLimiterAspect();
     }
 
     @Bean
@@ -126,7 +126,7 @@ public class BeanAutoConfiguration {
     )
     public RepeatSubmitAspect repeatSubmitAspect() {
         logger.info("RepeatSubmit Successfully");
-        return new RepeatSubmitAspect(this.redissonClient);
+        return new RepeatSubmitAspect(redissonClient);
     }
 
 

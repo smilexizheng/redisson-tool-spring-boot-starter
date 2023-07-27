@@ -11,6 +11,7 @@ import org.smilexizheng.exception.RedissonToolException;
 import org.smilexizheng.spel.ExpressionEvaluator;
 import org.smilexizheng.utils.CommonUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.Order;
@@ -29,10 +30,11 @@ import java.util.Map;
  */
 @Aspect
 @Order(1)
-public class RepeatSubmitAspect implements ApplicationContextAware {
+public class RepeatSubmitAspect {
 
     private static final ExpressionEvaluator EVALUATOR = new ExpressionEvaluator();
 
+    @Autowired
     private ApplicationContext applicationContext;
 
     private final RedissonClient redissonClient;
@@ -94,10 +96,7 @@ public class RepeatSubmitAspect implements ApplicationContextAware {
         }
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+
 
 
 }

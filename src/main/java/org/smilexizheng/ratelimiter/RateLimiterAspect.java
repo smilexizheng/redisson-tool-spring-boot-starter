@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.smilexizheng.spel.ExpressionEvaluator;
 import org.smilexizheng.utils.CommonUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.Order;
@@ -26,7 +27,8 @@ public class RateLimiterAspect implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    private final RateLimiterClient rateLimiterClient;
+    @Autowired
+    private  RateLimiterClient rateLimiterClient;
 
     private static final String PREFIX = "rate-limiter:";
 
@@ -51,7 +53,5 @@ public class RateLimiterAspect implements ApplicationContextAware {
         this.applicationContext=applicationContext;
     }
 
-    public RateLimiterAspect(RateLimiterClient rateLimiterClient){
-        this.rateLimiterClient =rateLimiterClient;
-    }
+
 }
