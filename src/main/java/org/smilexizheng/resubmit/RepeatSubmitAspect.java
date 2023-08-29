@@ -66,7 +66,7 @@ public class RepeatSubmitAspect {
 
         if(repeatSubmit.validateForm()){
             //签名参数 最终转hex唯一标识
-            StringBuffer signature = new StringBuffer(pointHex);
+            StringBuilder signature = new StringBuilder(pointHex);
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             Map<String, String[]> parameterMap = request.getParameterMap();
 
