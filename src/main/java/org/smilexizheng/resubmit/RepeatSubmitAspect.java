@@ -50,7 +50,7 @@ public class RepeatSubmitAspect {
     public Object aroundRedisLock(ProceedingJoinPoint point, RepeatSubmit repeatSubmit) {
 
 
-        StringBuffer redisKey = new StringBuffer(PREFIX);
+        StringBuilder redisKey = new StringBuilder(PREFIX);
         String pointHex = CommonUtil.getMd5DigestAsHex(point.getStaticPart().toLongString());
         String key = repeatSubmit.value();
         if(StringUtil.isBlank(key)){
